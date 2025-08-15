@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Define your list of servers
+servers=(
+  "name=production,path=username@hostname"
+  "name=qa,path=username@hostname"
+)
+
+# Display the list with numbers
+echo "Available servers:"
+for i in "${!servers[@]}"; do
+  name=$(echo "${servers[$i]}" | cut -d',' -f1 | cut -d'=' -f2)
+  path=$(echo "${servers[$i]}" | cut -d',' -f2 | cut -d'=' -f2)
+  echo "$((i+1)). $name ($path)"
+done
+
+# Prompt for selection
+read -p "Enter the number of the server to connect: " choice
+
+# Validate input
+if [[ "$choice" -ge 1 && "$choice" -le "${#servers[@]}" ]]; then
+  selected_path=$(echo "${servers[$((choice-1))]}" | cut -d',' -f2 | cut -d'=' -f2)
+  echo "Connecting to $selected_path..."
+  ssh "$selected_path"
+else
+  echo "Invalid selection."
+  exit 1
+fi
+
